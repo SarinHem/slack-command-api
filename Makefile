@@ -21,7 +21,7 @@ build:
 	@echo "🔨 Building Docker image: $(IMAGE_NAME):$(TAG)"
 	docker build -t $(IMAGE_NAME):$(TAG) .
 
-run:	
+run:        
         @echo "🚀 Pull Lasted Image  And Running container: $(CONTAINER_NAME) on port $(PORT)"
         docker pull sarindockerhub/$(IMAGE_NAME) || true
 	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 sarindockerhub/$(IMAGE_NAME):$(TAG)
