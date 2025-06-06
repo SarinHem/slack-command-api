@@ -42,6 +42,8 @@ clean:
 	docker rmi $(IMAGE_NAME):$(TAG) || true
 
 clean-untag:
-	@echo "🗑️ Removing untagged images for $(IMAGE_NAME)..."
-	docker images --filter=reference='$(IMAGE_NAME)' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep '<none>' | awk '{print $2}' | xargs -r docker rmi
+	@echo "🧹 Cleaning untagged $(IMAGE_NAME) images..."
+	@docker images --format '{{.Repository}} {{.Tag}} {{.ID}}' | \
+	awk '$$1 == "$(IMAGE_NAME)" && $$2 == "<none>" { print $$3 }' | \
+	xargs -r docker rmi
 
