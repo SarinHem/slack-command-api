@@ -12,7 +12,7 @@ help:
 	@echo "  push    - Tag and push the image to Docker Hub"
 	@echo "  clean   - Remove the Docker image"
 
-IMAGE_NAME=slack-api
+IMAGE_NAME=sarindockerhub/slack-api
 TAG=latest
 CONTAINER_NAME=slack-api-container
 PORT=8181
@@ -22,10 +22,10 @@ build:
 	docker build -t $(IMAGE_NAME):$(TAG) .
 
 run:
-	@echo "🐳 Pull Lasted Image  from DockerHub sarindockerhub/$(IMAGE_NAME):$(TAG)"
-	docker pull sarindockerhub/$(IMAGE_NAME)
+	@echo "🐳 Pull Lasted Image  from DockerHub $(IMAGE_NAME):$(TAG)"
+	docker pull $(IMAGE_NAME)
 	@echo "🚀 Pull Lasted Image  And Running container: $(CONTAINER_NAME) on port $(PORT)"
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 sarindockerhub/$(IMAGE_NAME):$(TAG)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 $(IMAGE_NAME):$(TAG)
 
 stop:
 	@echo "🛑 Stopping and removing container: $(CONTAINER_NAME)"
@@ -35,13 +35,13 @@ stop:
 push:
 	@echo "📦 Tagging and pushing image to Docker Hub..."
 	docker tag $(IMAGE_NAME):$(TAG) mydockerhubuser/$(IMAGE_NAME):$(TAG)
-	docker push sarindockerhub/$(IMAGE_NAME):$(TAG)
+	docker push $(IMAGE_NAME):$(TAG)
 
 clean:
 	@echo "🧹 Removing Docker image: $(IMAGE_NAME):$(TAG)"
-	docker rmi sarindockerhub/$(IMAGE_NAME):$(TAG) || true
+	docker rmi $(IMAGE_NAME):$(TAG) || true
 
 clean-untag:
 	@echo "🗑️ Removing untagged images for $(IMAGE_NAME)..."
-	docker images --filter=reference='$(IMAGE_NAME)' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep '<none>' | awk '{print $$2}' | xargs -r docker rmi
+	docker images --filter=reference='$(IMAGE_NAME)' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep '<none>' | awk '{print $2}' | xargs -r docker rmi
 
