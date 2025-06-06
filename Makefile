@@ -13,7 +13,7 @@ WHITE := \033[0;37m
 NC := \033[0m # No Color
 
 # Phony targets (targets that don't represent files)
-.PHONY: default help build run stop push clean clean-untag pull logs shell status deploy health check-env check-docker
+.PHONY: default help build run stop push clean clean-untag pull-code logs shell status deploy health check-env check-docker
 
 # Default target
 default: help
@@ -27,7 +27,7 @@ help:
 	@echo "$(WHITE)Usage: make [target]$(NC)"
 	@echo ""
 	@echo "$(GREEN)📋 Available Targets:$(NC)"
-	@echo "  $(YELLOW)pull$(NC)         - Pull latest code from GitHub"
+	@echo "  $(YELLOW)pull-code$(NC)    - Pull latest code from GitHub"
 	@echo "  $(YELLOW)build$(NC)        - Build the Docker image"
 	@echo "  $(YELLOW)run$(NC)          - Pull latest image and run container"
 	@echo "  $(YELLOW)stop$(NC)         - Stop and remove the container"
@@ -84,7 +84,7 @@ check-docker:
 	fi
 
 # Pull latest code from GitHub
-pull: check-env
+pull-code: check-env
 	@echo "$(BLUE)📥 Pulling latest changes from GitHub...$(NC)"
 	@git pull https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) main || { \
 		echo "$(RED)❌ Failed to pull from GitHub$(NC)"; \
