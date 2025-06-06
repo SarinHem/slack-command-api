@@ -1,0 +1,7 @@
+# Ignore environment files with secrets
+.env
+.env.*
+
+# Ignore Docker and Make files
+Dockerfile
+Makefile
