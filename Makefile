@@ -17,7 +17,7 @@ help:
 
 pull:
 	@echo "📥 Pulling latest changes from GitHub..."
-	@GIT_REPO=https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@github.com/your-user/your-repo.git \
+	GIT_REPO=https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) \
 	git pull $(GIT_REPO) main
 
 build:
