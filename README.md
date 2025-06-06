@@ -1,99 +1,134 @@
-# Slack API Container
 
-This project provides a lightweight Dockerized Slack API command handler, designed to be easily built, run, and managed using a `Makefile`.
+# Slack API Docker Project
 
----
-
-## 📦 Features
-
-- Dockerized backend for handling Slack slash commands
-- Simple `Makefile` to automate build, run, stop, and clean operations
-- Configurable port mapping
-- Docker Hub integration for image pushing
+This project contains a Dockerized Slack API service with convenient build, run, and deployment commands managed via a Makefile. Configuration variables are stored securely in a `.env` file.
 
 ---
 
-## 🚀 Getting Started
+## Prerequisites
 
-### 🔧 Requirements
-
-- Docker
-- GNU Make
-- (Optional) ngrok — for local testing with Slack
+- Docker installed
+- Git installed
+- A GitHub personal access token with repo permissions
+- `.env` file configured with your credentials and settings
 
 ---
 
-### 🛠️ Usage
+## Setup
 
-#### 🔨 Build the Docker image
+1. **Create `.env` file in the project root:**
+
+```env
+GITHUB_USERNAME=your-github-username
+GITHUB_TOKEN=your-personal-access-token
+GIT_REPO=github.com/your-user/your-repo.git
+IMAGE_NAME=sarindockerhub/slack-api
+TAG=latest
+CONTAINER_NAME=slack-api-container
+PORT=8181
+```
+
+> **Important:** Add `.env` to your `.gitignore` to avoid committing secrets.
+
+---
+
+## Makefile Commands
+
+Use the following commands to manage your project.
+
+### Build Docker Image
 
 ```bash
 make build
 ```
 
-#### 🚀 Run the container
+Builds the Docker image with the tag specified in `.env`.
+
+---
+
+### Run Docker Container
 
 ```bash
 make run
 ```
 
-The container will be accessible at:  
-`http://localhost:8181` (or the port you configured in the `Makefile`)
+Runs the Docker container exposing the port defined in `.env`.
 
-#### 🛑 Stop and remove the container
+---
+
+### Stop Docker Container
 
 ```bash
 make stop
 ```
 
-#### 🧹 Remove the Docker image
+Stops the running Docker container.
 
-```bash
-make clean
-```
+---
 
-#### 📤 Push image to Docker Hub
-
-Make sure to update your Docker Hub username inside the `Makefile`.
+### Push Docker Image to Docker Hub
 
 ```bash
 make push
 ```
 
----
-
-## 📝 Slash Command Setup (in Slack)
-
-1. Go to your Slack app configuration.
-2. Navigate to **Slash Commands**.
-3. Create a new command (e.g. `/deploy`).
-4. Set the **Request URL** to your server or `ngrok` endpoint:
-   ```
-   https://your-ngrok-url.ngrok.io/slack/commands
-   ```
-5. Save changes and test the command in your Slack workspace.
+Tags and pushes the image to your Docker Hub repository. Make sure to update `IMAGE_NAME` accordingly.
 
 ---
 
-## 📁 File Structure
+### Clean Local Docker Images
 
-```
-.
-├── Dockerfile
-├── Makefile
-├── README.md
-├── app.py  # or your backend implementation
+```bash
+make clean
 ```
 
----
-
-## 📌 Notes
-
-- The container exposes port `8181` by default. Change the `PORT` variable in the `Makefile` if needed.
-- The container name is `slack-api-container`.
+Removes the local Docker image by tag.
 
 ---
 
-## 📜 License
+### Remove Untagged Docker Images
 
-MIT License — see [LICENSE](./LICENSE) for details.
+```bash
+make clean-untag
+```
+
+Removes dangling (untagged) Docker images related to `IMAGE_NAME`.
+
+---
+
+### Pull Latest Code from GitHub
+
+```bash
+make pull
+```
+
+Pulls the latest changes from the GitHub repository using credentials stored in `.env`.  
+**Note:** This uses the token-based HTTPS URL from `.env`. For better security, consider SSH key authentication.
+
+---
+
+## Security Notes
+
+- **Never commit your `.env` file to Git.** It contains sensitive credentials.
+- Prefer using SSH keys for GitHub authentication to avoid exposing tokens in URLs.
+- Make sure your `.env` file permissions are restrictive (`chmod 600 .env`).
+
+---
+
+## Example `.gitignore`
+
+```gitignore
+.env
+.env.*
+node_modules/
+.vscode/
+.DS_Store
+```
+
+---
+
+If you want help setting up SSH authentication or securing your environment, just ask!
+
+---
+
+Happy coding! 🚀

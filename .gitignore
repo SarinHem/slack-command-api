@@ -5,3 +5,4 @@
 # Ignore Docker and Make files
 Dockerfile
 Makefile
+README.md
