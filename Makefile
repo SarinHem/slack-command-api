@@ -17,6 +17,7 @@ help:
 
 pull:
 	@echo "📥 Pulling latest changes from GitHub..."	
+	@set -o allexport; source .env; set +o allexport; \
 	git pull https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) main
 
 build:
