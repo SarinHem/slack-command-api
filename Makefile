@@ -17,8 +17,8 @@ help:
 
 pull:
 	@echo "📥 Pulling latest changes from GitHub..."
-	GIT_REPO=https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) \
-	git pull $(GIT_REPO) main
+	GIT_REPO_PULL=https://$(GITHUB_USERNAME)@$(GITHUB_TOKEN)@$(GIT_REPO) \
+	git pull $(GIT_REPO_PULL) main
 
 build:
 	@echo "🔨 Building Docker image: $(IMAGE_NAME):$(TAG)"
