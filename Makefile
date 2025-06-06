@@ -9,11 +9,14 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  build   - Build the Docker image"
-	@echo "  run     - Run the Docker container"
-	@echo "  stop    - Stop and remove the container"
-	@echo "  push    - Tag and push the image to Docker Hub"
-	@echo "  clean   - Remove the Docker image"
+	@echo "  pull         - pull git lasted code "
+	@echo "  build        - Build the Docker image"
+	@echo "  run          - Run the Docker container"
+	@echo "  stop         - Stop and remove the container"
+	@echo "  push         - Tag and push the image to Docker Hub"
+	@echo "  clean        - Remove the Docker image"
+	@echo "  clean-untag  - Remove the Docker image untag"
+
 
 pull:
 	@echo "📥 Pulling latest changes from GitHub..."	
