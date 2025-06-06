@@ -23,7 +23,7 @@ build:
 
 run:
 	@echo "🚀 Running container: $(CONTAINER_NAME) on port $(PORT)"
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 $(IMAGE_NAME):$(TAG)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 sarindockerhub/$(IMAGE_NAME):$(TAG)
 
 stop:
 	@echo "🛑 Stopping and removing container: $(CONTAINER_NAME)"
@@ -33,7 +33,7 @@ stop:
 push:
 	@echo "📦 Tagging and pushing image to Docker Hub..."
 	docker tag $(IMAGE_NAME):$(TAG) mydockerhubuser/$(IMAGE_NAME):$(TAG)
-	docker push mydockerhubuser/$(IMAGE_NAME):$(TAG)
+	docker push sarindockerhub/$(IMAGE_NAME):$(TAG)
 
 clean:
 	@echo "🧹 Removing Docker image: $(IMAGE_NAME):$(TAG)"
