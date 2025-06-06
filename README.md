@@ -22,7 +22,7 @@ This project contains a Dockerized Slack API service with convenient build, run,
 GITHUB_USERNAME=your-github-username
 GITHUB_TOKEN=your-personal-access-token
 GIT_REPO=github.com/your-user/your-repo.git
-IMAGE_NAME=sarindockerhub/slack-api
+IMAGE_NAME=repositry-name/slack-api
 TAG=latest
 CONTAINER_NAME=slack-api-container
 PORT=8181
