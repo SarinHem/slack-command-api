@@ -172,7 +172,7 @@ def home():
 def slack_command():
     try:
         # Validate Slack request
-        validate_slack_signature(request)
+        #validate_slack_signature(request)
         #validate_slack_ip(request)
 
         logging.debug("Request Headers: %s", request.form)
