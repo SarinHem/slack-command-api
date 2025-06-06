@@ -22,9 +22,9 @@ build:
 	docker build -t $(IMAGE_NAME):$(TAG) .
 
 run:
-	@echo "🐳 Pull lasted image from Dockerhub sarindockerhub/$(IMAGE_NAME):$(TAG)"
-        docker pull sarindockerhub/$(IMAGE_NAME):$(TAG) || true
-        @echo "🚀 Running container: $(CONTAINER_NAME) on port $(PORT)"
+	@echo "🐳 Pull lasted image from Dockerhub sarindockerhub/$(IMAGE_NAME):$(TAG)"        
+        @echo "And 🚀 Running container: $(CONTAINER_NAME) on port $(PORT)"
+        docker pull sarindockerhub/$(IMAGE_NAME):$(TAG) 
 	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 sarindockerhub/$(IMAGE_NAME):$(TAG)
 
 stop:
