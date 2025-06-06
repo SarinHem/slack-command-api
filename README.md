@@ -16,7 +16,7 @@ This project contains a Dockerized Slack API service with convenient build, run,
 
 ---
 
-# Docker Hub Login Required
+### Docker Hub Login Required
 
 To push and pull image from dockerhub, ensure you're logged in:
 
