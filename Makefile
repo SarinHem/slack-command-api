@@ -1,3 +1,6 @@
+include .env
+export
+
 .PHONY: default help build run stop push clean
 
 default: help
@@ -12,10 +15,10 @@ help:
 	@echo "  push    - Tag and push the image to Docker Hub"
 	@echo "  clean   - Remove the Docker image"
 
-IMAGE_NAME=sarindockerhub/slack-api
-TAG=latest
-CONTAINER_NAME=slack-api-container
-PORT=8181
+pull:
+	@echo "📥 Pulling latest changes from GitHub..."
+	@GIT_REPO=https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@github.com/your-user/your-repo.git \
+	git pull $(GIT_REPO) main
 
 build:
 	@echo "🔨 Building Docker image: $(IMAGE_NAME):$(TAG)"
