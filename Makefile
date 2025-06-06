@@ -16,9 +16,8 @@ help:
 	@echo "  clean   - Remove the Docker image"
 
 pull:
-	@echo "📥 Pulling latest changes from GitHub..."
-	GIT_REPO_PULL=https://$(GITHUB_USERNAME)@$(GITHUB_TOKEN)@$(GIT_REPO) \
-	git pull $(GIT_REPO_PULL) main
+	@echo "📥 Pulling latest changes from GitHub..."	
+	git pull https://$(GITHUB_USERNAME)@$(GITHUB_TOKEN)@$(GIT_REPO) main
 
 build:
 	@echo "🔨 Building Docker image: $(IMAGE_NAME):$(TAG)"
