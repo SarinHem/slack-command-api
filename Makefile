@@ -17,7 +17,7 @@ help:
 
 pull:
 	@echo "📥 Pulling latest changes from GitHub..."	
-	@bash -c 'set -o allexport; source .env; set +o allexport; git pull https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) main
+	@bash -c 'set -o allexport; source .env; set +o allexport; git pull https://$(GITHUB_USERNAME):$(GITHUB_TOKEN)@$(GIT_REPO) main'
 
 build:
 	@echo "🔨 Building Docker image: $(IMAGE_NAME):$(TAG)"
