@@ -37,5 +37,5 @@ push:
 
 clean:
 	@echo "🧹 Removing Docker image: $(IMAGE_NAME):$(TAG)"
-	docker rmi $(IMAGE_NAME):$(TAG) || true
+	docker rmi sarindockerhub/$(IMAGE_NAME):$(TAG) || true
 
