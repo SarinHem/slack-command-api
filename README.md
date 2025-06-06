@@ -16,6 +16,17 @@ This project contains a Dockerized Slack API service with convenient build, run,
 
 ---
 
+# Docker Hub Login Required
+
+To push and pull image from dockerhub, ensure you're logged in:
+
+```bash
+docker login 
+```
+
+You'll be prompted for your Docker Hub username and password (or access token). This is required for `make push` to work properly.
+
+
 ## Setup
 
 1. **Create `.env` file in the project root:**
