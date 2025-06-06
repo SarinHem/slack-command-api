@@ -13,16 +13,16 @@ This project contains a Dockerized Slack API service with convenient build, run,
 - (Optional) ngrok — for local testing with Slack
 - A GitHub personal access token with repo permissions
 - `.env` file configured with your credentials and settings
-
----
-
-### Docker Hub Login Required
+Docker Hub Login Required
 
 To push and pull image from dockerhub, ensure you're logged in:
 
 ```bash
 docker login 
 ```
+---
+
+
 
 You'll be prompted for your Docker Hub username and password (or access token). This is required for `make push` to work properly.
 
