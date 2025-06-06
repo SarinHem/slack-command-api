@@ -9,6 +9,8 @@ This project contains a Dockerized Slack API service with convenient build, run,
 
 - Docker installed
 - Git installed
+- GNU Make
+- (Optional) ngrok — for local testing with Slack
 - A GitHub personal access token with repo permissions
 - `.env` file configured with your credentials and settings
 
