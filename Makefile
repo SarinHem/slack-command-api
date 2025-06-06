@@ -41,3 +41,7 @@ clean:
 	@echo "🧹 Removing Docker image: $(IMAGE_NAME):$(TAG)"
 	docker rmi sarindockerhub/$(IMAGE_NAME):$(TAG) || true
 
+clean-untag:
+	@echo "🗑️ Removing untagged images for $(IMAGE_NAME)..."
+	@docker images --filter=reference='$(IMAGE_NAME)' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep '<none>' | awk '{print $$2}' | xargs -r docker rmi
+
