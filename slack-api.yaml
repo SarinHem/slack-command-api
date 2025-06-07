@@ -31,7 +31,7 @@ spec:
         image: sarindockerhub/slack-api:latest  # Update with your actual Docker Hub image
         imagePullPolicy: Always
         ports:
-        - containerPort: 8181
+        - containerPort: 8080
         # Only include environment variables your app actually needs
         # env:
         # - name: PORT
@@ -47,12 +47,12 @@ spec:
         # Basic health check using the port
         livenessProbe:
           tcpSocket:
-            port: 8181
+            port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           tcpSocket:
-            port: 8181
+            port: 8080
           initialDelaySeconds: 5
           periodSeconds: 5
 
@@ -68,6 +68,6 @@ spec:
     app: slack-api
   ports:
   - port: 80
-    targetPort: 8181
+    targetPort: 8080
   type: NodePort  # Simple external access
 
