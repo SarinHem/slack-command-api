@@ -164,7 +164,7 @@ def convert_to_normal_text(text):
 
 @app.route('/')
 def home():
-    return "Welcome to Slack Command API!"
+    return "Welcome to Slack Command API Hash Check Transaction Status!"
 
 
 # Define a route for the Slack command
