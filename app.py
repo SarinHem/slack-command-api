@@ -4,6 +4,13 @@ import logging
 import requests
 import time
 from flask import Flask, request, jsonify, abort
+from opentelemetry import trace, metrics
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 app = Flask(__name__)
 
@@ -15,6 +22,37 @@ SLACK_SIGNING_SECRET ="efaa09cee80ed8ef6f99dc1e8e5887af"  # Set this in your env
 
 # Set the Slack IP ranges (Fetch dynamically in production for the latest ranges)
 SLACK_IP_RANGES = ["52.66.6.0/24", "52.65.7.0/24"]  # Replace this with dynamic fetching if needed
+
+
+# Initialize OpenTelemetry
+def init_otel():
+    """Initialize OpenTelemetry with Jaeger exporter"""
+    resource = Resource.create(
+        {
+            "service.name": "slack-command-api-khqr",
+            "service.version": "1.0.0",
+        }
+    )
+    
+    # Configure Jaeger exporter
+    jaeger_exporter = JaegerExporter(
+        agent_host_name="localhost",  # Change to your Jaeger host
+        agent_port=6831,  # Jaeger agent port
+    )
+    
+    trace_provider = TracerProvider(resource=resource)
+    trace_provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
+    trace.set_tracer_provider(trace_provider)
+    
+    # Auto-instrument Flask and requests
+    FlaskInstrumentor().instrument_app(app)
+    RequestsInstrumentor().instrument()
+    
+    return trace.get_tracer(__name__)
+
+
+# Initialize tracer
+tracer = init_otel()
 
 
 # Function to validate Slack signature
@@ -100,63 +138,101 @@ def validate_and_prepare_check_instruction_ref(slack_text):
     return {"instructionRef": instruction_ref}
 
 def check_transaction(slack_data):
-    # Base URL
-    # Extract hash, currency, and amount from Slack's parameters
-    slack_text = slack_data.get('text').split(',')
+    with tracer.start_as_current_span("check_transaction") as span:
+        # Base URL
+        # Extract hash, currency, and amount from Slack's parameters
+        slack_text = slack_data.get('text').split(',')
 
-    command = slack_text[0]
+        command = slack_text[0]
+        
+        # Add Slack context to span
+        span.set_attribute("slack.user_id", slack_data.get('user_id', 'unknown'))
+        span.set_attribute("slack.team_id", slack_data.get('team_id', 'unknown'))
+        span.set_attribute("slack.channel_id", slack_data.get('channel_id', 'unknown'))
+        span.set_attribute("slack.command", command)
 
-    base_url = "https://api-bakong.nbc.gov.kh/local/v1/"
+        base_url = "https://api-bakong.nbc.gov.kh/local/v1/"
 
-    # Map commands to their respective endpoints and payloads
-    # Map commands to their respective endpoints and payload generators
-    commands = {
-        "hash": {
-            "endpoint": "check_transaction_by_short_hash",
-            "validate_and_payload": lambda: validate_and_prepare_check_hash(slack_text)
-        },
-        "ext": {
-            "endpoint": "check_transaction_by_external_ref",
-            "validate_and_payload": lambda: validate_and_prepare_check_ref(slack_text)
-        },
-        "inst": {
-            "endpoint": "check_transaction_by_instruction_ref",
-            "validate_and_payload": lambda: validate_and_prepare_check_instruction_ref(slack_text)
+        # Map commands to their respective endpoints and payloads
+        # Map commands to their respective endpoints and payload generators
+        commands = {
+            "hash": {
+                "endpoint": "check_transaction_by_short_hash",
+                "validate_and_payload": lambda: validate_and_prepare_check_hash(slack_text)
+            },
+            "ext": {
+                "endpoint": "check_transaction_by_external_ref",
+                "validate_and_payload": lambda: validate_and_prepare_check_ref(slack_text)
+            },
+            "inst": {
+                "endpoint": "check_transaction_by_instruction_ref",
+                "validate_and_payload": lambda: validate_and_prepare_check_instruction_ref(slack_text)
+            }
         }
-    }
 
-    # Get the command configuration
-    command_config = commands.get(command)
-    if not command_config:
-        return {"error": f"Invalid command: {command}"}
+        # Get the command configuration
+        command_config = commands.get(command)
+        if not command_config:
+            span.set_attribute("error.type", "invalid_command")
+            span.set_attribute("error.message", f"Invalid command: {command}")
+            return {"error": f"Invalid command: {command}"}
 
-    # Construct the URL
-    url = f"{base_url}{command_config['endpoint']}"
+        # Construct the URL
+        url = f"{base_url}{command_config['endpoint']}"
+        
+        span.set_attribute("bakong.endpoint", command_config['endpoint'])
+        span.set_attribute("bakong.url", url)
 
-    # Generate the payload
-    try:
-        data = command_config["validate_and_payload"]()
-    except TypeError as e:
-        return {"error": f"Invalid payload parameters: {e}"}
+        # Generate the payload
+        try:
+            data = command_config["validate_and_payload"]()
+        except TypeError as e:
+            span.set_attribute("error.type", "validation_error")
+            span.set_attribute("error.message", str(e))
+            return {"error": f"Invalid payload parameters: {e}"}
 
-    headers = {
-        "Content-Type": "application/json;charset=UTF-8",
-        "Origin": "https://api-bakong.nbc.gov.kh"
-    }
+        headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Origin": "https://api-bakong.nbc.gov.kh"
+        }
 
-    # Send the request
-    try:
-        response = requests.post(url, json=data, headers=headers)
-        if response.status_code == 200:
-            response_data = response.json()
-            response_data['check_by'] = convert_to_normal_text(command_config['endpoint'])
-            return response_data
-        else:
-            logging.error(f"Error from Bakong API: {response.text}")
-            return {"error": "Failed to check transaction"}
-    except Exception as e:
-        logging.error(f"Error sending request to Bakong API: {e}")
-        return {"error": "An error occurred while contacting the Bakong API"}
+        # Send the request with tracing
+        with tracer.start_as_current_span("bakong_api_request") as api_span:
+            api_span.set_attribute("http.method", "POST")
+            api_span.set_attribute("http.url", url)
+            api_span.set_attribute("http.request_body", str(data))
+            
+            try:
+                response = requests.post(url, json=data, headers=headers)
+                
+                api_span.set_attribute("http.status_code", response.status_code)
+                
+                if response.status_code == 200:
+                    response_data = response.json()
+                    response_data['check_by'] = convert_to_normal_text(command_config['endpoint'])
+                    
+                    # Add response details to span
+                    span.set_attribute("response.code", response_data.get("responseCode", "unknown"))
+                    span.set_attribute("response.message", response_data.get("responseMessage", "success"))
+                    
+                    if "data" in response_data:
+                        data_obj = response_data["data"]
+                        span.set_attribute("transaction.hash", data_obj.get("hash", "N/A"))
+                        span.set_attribute("transaction.amount", data_obj.get("amount", 0))
+                        span.set_attribute("transaction.currency", data_obj.get("currency", "N/A"))
+                    
+                    return response_data
+                else:
+                    api_span.set_attribute("error.type", "api_error")
+                    api_span.set_attribute("error.message", response.text)
+                    logging.error(f"Error from Bakong API: {response.text}")
+                    return {"error": f"Failed to check transaction {response.text}"}
+            except Exception as e:
+                api_span.set_attribute("error.type", "request_exception")
+                api_span.set_attribute("error.message", str(e))
+                api_span.record_exception(e)
+                logging.error(f"Error sending request to Bakong API: {e}")
+                return {"error": "An error occurred while contacting the Bakong API"}
 
 def convert_to_normal_text(text):
     # Replace underscores with spaces and capitalize each word

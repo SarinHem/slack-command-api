@@ -2,3 +2,9 @@ Flask==2.2.5
 requests==2.32.4
 Werkzeug==3.1.5
 setuptools==78.1.1
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-flask==0.42b0
+opentelemetry-instrumentation-requests==0.42b0
+opentelemetry-exporter-jaeger-thrift==1.21.0
+opentelemetry-exporter-otlp==1.21.0
